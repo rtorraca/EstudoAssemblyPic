@@ -1,0 +1,234 @@
+MPASM  5.51              SOURCE_FILE_AULA.ASM   6-9-2016  21:52:20         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ;Curso de Assembly para PIC Aula 02
+                      00002 ;
+                      00003 ; MCU:PIC16F84A         Clock: 4MHz
+                      00004 ; Autor: Robson Torraca - Wagner Rambo
+                      00005 ;
+                      00006 
+Warning[205]: Found directive in column 1. (list)
+                      00007 list            p=16f84A                ;Microcontrolador utilizado PIC16F84A
+                      00008 
+                      00009 ; ---Arquivos incluídos no projeto---
+                      00010 
+                      00011 #include <p16f84a.inc>
+                      00001         LIST
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ;  MPASM PIC16F84A processor include
+                      00005 ; 
+                      00006 ;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
+                      00007 ;==========================================================================
+                      00008 
+                      00208         LIST
+                      00012 
+                      00013 ; --- FUSE Bits, basedos no arquivo include p16f84a.inc ---
+                      00014 ; --- Referência em CONFIG Options ---
+2007   3FF1           00015         __config _XT_OSC & _WDT_OFF & _PWRTE_ON & _CP_OFF  
+                      00016         
+                      00017 ; __config_XT_OSC, cristal interno de 4MHz
+                      00018 ; __WDT_OFF, "cão de guarda", Sem dar reset se detectado um evento específico  
+                      00019 ; __PWRTE_ON, Liago o tempo que ao iniciar o Mc (72ms) agurada para iniciar o processamento e iniciar os
+                             regs
+                      00020 ; __CP__OFF, Sem proteção cópia de código
+                      00021 
+                      00022 
+                      00023 ; ---Memória de Paginação ---
+                      00024 ; bcf: b, bit; c, clear; f, file (arquivo, refere ao registrador) ; Pegue determinado bit do reg. Status
+                            , o bit RP0 e clear
+                      00025 ; bsf: b, bit; set, set; f, file (arquivo, refere ao registrador); Pegue determinado bit do reg. Status,
+                             o bit RP0 e set
+                      00026 ; Instrução bcf,bsf com seus argumentos.
+                      00027 
+                      00028 #define         bank0           bcf STATUS,RP0 ;Cria minemônico para banco 0 de memória
+                      00029 #define         bank1           bsf STATUS,RP0 ;Cria minemônico para banco 1 de memória
+                      00030 
+                      00031 ; --- Entradas ---
+                      00032 #define         botao1          PORTB,RB0               ;Portão 1 ligado em RB0          
+                      00033 
+                      00034 ; --- Saídas ---
+                      00035 
+                      00036 #define         led1            PORTB,RB7               ;Led1 ligado em RB7                     
+                      00037 
+                      00038 ; -- RESET VECTOR ----
+                      00039 ; Vetor de reset, em 000h, 
+                      00040 
+MPASM  5.51              SOURCE_FILE_AULA.ASM   6-9-2016  21:52:20         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00041 ; -- Vetor de interrupção ---
+                      00042 ; -- Endereço do vetor de interupção, 0004h --- 
+                      00043 
+                      00044 ; -- ORG ---
+                      00045 ; Diretiva de organição de memória 
+                      00046 
+                      00047                 org             H'0000'                         ; Origem no endereço 0000h de memória
+0000   2???           00048                 goto    inicio                          ; Desvia do vetor de interrupção para endereço
+                      00049                 
+                      00050 ; ---Vetor de interrupção ---
+                      00051                 org             H'0004'                         ; Todas apontam para este endereço, entr
+                            a aqui quando chamada a interrupção 
+0004   0009           00052                 retfie                                          ; Retorna de interrupção, para o código 
+                            que a gerou
+                      00053 
+0005                  00054 inicio:
+                      00055 
+0005   1683           00056                 bank1                                           ; Seleciona Bank1 de memória onde está T
+                            RISB
+                      00057                 ; 0 -> Saída, output , 1-> Entrada, input
+                      00058                 ; Recomendado todos os bits, não usados em 1, pois estará em alta impedância e protegido
+                             contra danos 
+                      00059                 ; Por isso TRISA e TRISB iniciam em 0 automaticamente, aqui eles estrão iniciados apenas
+                             como exempo
+0006   30FF           00060                 movlw   H'FF'                           ; W = B'11111111', todos como entrada
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0007   0085           00061                 movwf   TRISA                           ; Reg. de direção do PORTA, TRISA = H'FF' (Todos
+                             os bits são entrada)   
+0008   307F           00062                 movlw   H'7F'                           ; W = B'01111111', Move uma literal(valor consta
+                            nte) para W(registrador de trabalho)
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0009   0086           00063                 movwf   TRISB                           ; TRISB = H'7F',define apenas o RB7 saída       
+000A   1283           00064                 bank0                                           ; Retorna para o Bank0, pois é o padrãp 
+                            reset
+000B   30FF           00065                 movlw   H'FF'                           ; W = B'11111111', iniciar PORTB
+000C   0086           00066                 movwf   PORTB                           ; RB7 (Configurado como saída), mas iniciado em 
+                            HIGH
+000D   2???           00067                 goto    $                                       ; Vai para esta própria linha, tipo de l
+                            oop infinito   
+3FF1                  00068                 end                                                     ; Final do programa
+MPASM  5.51              SOURCE_FILE_AULA.ASM   6-9-2016  21:52:20         PAGE  3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+C                                 00000000
+DC                                00000001
+EEADR                             00000009
+EECON1                            00000088
+EECON2                            00000089
+EEDATA                            00000008
+EEIE                              00000006
+EEIF                              00000004
+F                                 00000001
+FSR                               00000004
+GIE                               00000007
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+NOT_PD                            00000003
+NOT_RBPU                          00000007
+NOT_TO                            00000004
+OPTION_REG                        00000081
+PCL                               00000002
+PCLATH                            0000000A
+PORTA                             00000005
+PORTB                             00000006
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+RA0                               00000000
+RA1                               00000001
+RA2                               00000002
+RA3                               00000003
+RA4                               00000004
+RB0                               00000000
+RB1                               00000001
+RB2                               00000002
+RB3                               00000003
+RB4                               00000004
+RB5                               00000005
+RB6                               00000006
+RB7                               00000007
+RBIE                              00000003
+RBIF                              00000000
+RD                                00000000
+RP0                               00000005
+RP1                               00000006
+STATUS                            00000003
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+TMR0                              00000001
+MPASM  5.51              SOURCE_FILE_AULA.ASM   6-9-2016  21:52:20         PAGE  4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TMR0IE                            00000005
+TMR0IF                            00000002
+TRISA                             00000085
+TRISA0                            00000000
+TRISA1                            00000001
+TRISA2                            00000002
+TRISA3                            00000003
+TRISA4                            00000004
+TRISB                             00000086
+TRISB0                            00000000
+TRISB1                            00000001
+TRISB2                            00000002
+TRISB3                            00000003
+TRISB4                            00000004
+TRISB5                            00000005
+TRISB6                            00000006
+TRISB7                            00000007
+W                                 00000000
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+Z                                 00000002
+_.org_1_000D                      0000000D
+_CONFIG                           00002007
+_CP_OFF                           00003FFF
+_CP_ON                            0000000F
+_DEVID1                           00002006
+_FOSC_EXTRC                       00003FFF
+_FOSC_HS                          00003FFE
+_FOSC_LP                          00003FFC
+_FOSC_XT                          00003FFD
+_HS_OSC                           00003FFE
+_IDLOC0                           00002000
+_IDLOC1                           00002001
+_IDLOC2                           00002002
+_IDLOC3                           00002003
+_LP_OSC                           00003FFC
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDTE_OFF                         00003FFB
+_WDTE_ON                          00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FFD
+__16F84A                          00000001
+__DEBUG                           1
+bank0                             bcf STATUS,RP0
+bank1                             bsf STATUS,RP0
+botao1                            PORTB,RB0
+inicio                            00000005
+led1                              PORTB,RB7
+
+MPASM  5.51              SOURCE_FILE_AULA.ASM   6-9-2016  21:52:20         PAGE  5
+
+
+
+
+
+Errors   :     0
+Warnings :     1 reported,     0 suppressed
+Messages :     2 reported,     0 suppressed
+
+

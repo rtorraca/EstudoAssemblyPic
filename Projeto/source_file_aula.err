@@ -1,0 +1,3 @@
+Warning[205] C:\USERS\HOME\DOCUMENTS\PROJETOS\ESTUDOASSEMBLYPIC\SOURCE_FILE_AULA.ASM 7 : Found directive in column 1. (list)
+Message[302] C:\USERS\HOME\DOCUMENTS\PROJETOS\ESTUDOASSEMBLYPIC\SOURCE_FILE_AULA.ASM 61 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\HOME\DOCUMENTS\PROJETOS\ESTUDOASSEMBLYPIC\SOURCE_FILE_AULA.ASM 63 : Register in operand not in bank 0.  Ensure that bank bits are correct.
